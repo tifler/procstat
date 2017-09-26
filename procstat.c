@@ -83,7 +83,6 @@ static int parse_proc_stat(struct procstat *stbuf, char *strbuf)
 
         s = strchr(s, ' ');
         ASSERT(s);
-        //printf("String => [%s]\n", s);
 
         cpu = &stbuf->cpu[cpuid];
         sscanf(s, "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu", 
@@ -97,25 +96,10 @@ static int parse_proc_stat(struct procstat *stbuf, char *strbuf)
                 &cpu->steal,
                 &cpu->guest,
                 &cpu->guest_nice);
-#if 0
-        printf("CPU%d %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu\n", 
-                cpuid,
-                cpu->user,
-                cpu->nice,
-                cpu->system,
-                cpu->idle,
-                cpu->iowait,
-                cpu->irq,
-                cpu->softirq,
-                cpu->steal,
-                cpu->guest,
-                cpu->guest_nice);
-#endif  /*0*/
         cpuid++;
     }
 
     stbuf->nr_cpu = cpuid - 1;
-    //printf("nr_cpu = %d\n", stbuf->nr_cpu);
 
     return 0;
 }
@@ -141,8 +125,6 @@ int read_proc_stat(struct procstat *stbuf)
 
     ret = proc_read("/proc/stat", procbuf, sizeof(procbuf));
     ASSERT(ret == 0);
-
-    //printf("BUF ---\n%s\n-----\n", procbuf);
 
     ret = parse_proc_stat(stbuf, procbuf);
     ASSERT(ret == 0);
@@ -179,7 +161,7 @@ void show_proc_stat(struct procstat *prev, struct procstat *curr, unsigned long 
         if (flags & FLAG_VERBOSE) {
             printf(" (%3lu/%3lu", sum - idle, sum);
             if (flags & FLAG_DETAIL) {
-                printf("  idle:%3ld, usr:%3ld, nic:%3ld, sys:%3ld, iow:%3ld, irq:%3ld, sirq:%3ld",
+                printf("  idle:%3ld, usr:%3ld, nice:%3ld, sys:%3ld, iow:%3ld, irq:%3ld, sirq:%3ld",
                         curr->cpu[i + 1].idle - prev->cpu[i + 1].idle,
                         curr->cpu[i + 1].user - prev->cpu[i + 1].user,
                         curr->cpu[i + 1].nice - prev->cpu[i + 1].nice,
